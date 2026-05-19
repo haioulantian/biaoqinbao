@@ -6,14 +6,14 @@
 ![Python Version](https://img.shields.io/badge/Python-3.10.14%2B-blue)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen)](CONTRIBUTING.md)
-[![Contributors](https://img.shields.io/github/contributors/anka-afk/astrbot_plugin_meme_manager?color=green)](https://github.com/anka-afk/astrbot_plugin_meme_manager/graphs/contributors)
-[![Last Commit](https://img.shields.io/github/last-commit/anka-afk/astrbot_plugin_meme_manager)](https://github.com/anka-afk/astrbot_plugin_meme_manager/commits/main)
+[![Contributors](https://img.shields.io/github/contributors/haioulantian/biaoqinbao?color=green)](https://github.com/haioulantian/biaoqinbao/graphs/contributors)
+[![Last Commit](https://img.shields.io/github/last-commit/haioulantian/biaoqinbao)](https://github.com/haioulantian/biaoqinbao/commits/main)
 
 </div>
 
 <div align="center">
 
-[![Moe Counter](https://count.getloli.com/get/@GalChat?theme=moebooru)](https://github.com/anka-afk/astrbot_plugin_meme_manager)
+[![Moe Counter](https://count.getloli.com/get/@GalChat?theme=moebooru)](https://github.com/haioulantian/biaoqinbao)
 
 </div>
 
@@ -64,7 +64,7 @@
 2. **Q: WebUI 无法访问怎么解决？**
 
    - A: 请按以下步骤排查：
-     1. Docker 部署用户请先确保已映射端口，详见：[ISSUE#1](https://github.com/anka-afk/astrbot_plugin_meme_manager/issues/1)
+     1. Docker 部署用户请先确保已映射端口，详见：[ISSUE#1](https://github.com/haioulantian/biaoqinbao/issues/1)
      2. 使用内网穿透的用户需配置 NAT 转发，将内网 5000 端口映射到外网
      3. 云服务器用户请检查安全组是否已放行 5000 端口的入站规则
 
