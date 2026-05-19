@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meme Manager</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body class="app-page">
+
+    <header class="page-header">
+      <div class="page-header-main">
+        <div class="page-title-block">
+          <h1>表情包管理</h1>
+        </div>
+        <a href="#upload-folder-section" class="scroll-to-bottom-btn" aria-label="滚动到底部">
+          <i class="fas fa-arrow-down"></i>
+        </a>
+      </div>
+    </header>
+
+    <div
+      id="sidebar-backdrop"
+      class="sidebar-backdrop hidden"
+      aria-hidden="true"
+    ></div>
+
+    <div class="container">
+      <aside class="left-panel" id="app-sidebar-panel">
+        <div class="left-panel-header">
+          <div>
+            <p class="left-panel-eyebrow">导航</p>
+            <h2>分类目录</h2>
+          </div>
+        </div>
+
+        <div id="sidebar">
+          <h2>全部类别</h2>
+          <ul id="sidebar-list"></ul>
+        </div>
+      </aside>
+
+      <div id="content">
+        <div class="page-toolbar">
+          <div class="selection-toolbar">
+            <div class="selection-toolbar-copy">
+              <h2>批量管理</h2>
+              <p id="selection-summary">未开启批量选择</p>
+            </div>
+            <div class="selection-toolbar-actions">
+              <button id="batch-move-btn" class="secondary" disabled>
+                <i class="fas fa-right-left"></i>移动已选
+              </button>
+              <button id="batch-copy-btn" class="secondary" disabled>
+                <i class="fas fa-copy"></i>复制已选
+              </button>
+              <button id="toggle-selection-mode-btn" class="secondary">
+                <i class="fas fa-list-check"></i>开启批量选择
+              </button>
+              <button id="batch-delete-btn" class="danger" disabled>
+                <i class="fas fa-trash-can"></i>删除已选
+              </button>
+              <button id="clear-all-btn" class="danger" type="button">
+                <i class="fas fa-trash-can"></i>清空全部
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="emoji-categories"></div>
+
+        <button id="add-category-btn">
+          <i class="fas fa-plus"></i>添加分类
+        </button>
+        <div id="add-category-form" style="display: none">
+          <input
+            type="text"
+            id="new-category-name"
+            placeholder="类别名称"
+            class="form-control"
+          />
+          <input
+            type="text"
+            id="new-category-description"
+            placeholder="类别描述"
+            class="form-control mt-2"
+          />
+          <button id="save-category-btn" class="secondary">
+            <i class="fas fa-check"></i>保存分类
+          </button>
+        </div>
+
+        <div id="upload-folder-section">
+          <label id="upload-folder-btn">
+            <i class="fas fa-folder-open"></i>上传文件夹
+            <input
+              type="file"
+              id="upload-folder-input"
+              webkitdirectory
+              directory
+              multiple
+              class="sr-only"
+            />
+          </label>
+          <p id="upload-folder-hint">选择文件夹，自动以文件夹名创建分类并导入所有图片</p>
+
+          <label id="batch-upload-folder-btn">
+            <i class="fas fa-layer-group"></i>批量导入文件夹
+            <input
+              type="file"
+              id="batch-upload-folder-input"
+              webkitdirectory
+              directory
+              multiple
+              class="sr-only"
+            />
+          </label>
+          <p id="batch-upload-folder-hint">选择父文件夹，每个子文件夹自动成为一个分类</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- Batch context menu -->
+    <div id="batch-context-menu" class="batch-context-menu hidden" aria-hidden="true">
+      <div class="batch-context-menu-header">
+        <p id="batch-context-menu-title">批量管理</p>
+        <p id="batch-context-menu-subtitle">选择一个操作继续</p>
+      </div>
+      <div class="batch-context-menu-actions">
+        <button id="context-menu-delete-btn" type="button" class="danger">
+          <i class="fas fa-trash-can"></i>删除文件
+        </button>
+        <button id="context-menu-move-btn" type="button" class="secondary">
+          <i class="fas fa-right-left"></i>移动文件
+        </button>
+        <button id="context-menu-copy-btn" type="button" class="secondary">
+          <i class="fas fa-copy"></i>复制文件
+        </button>
+        <button id="context-menu-paste-btn" type="button">
+          <i class="fas fa-paste"></i>粘贴文件
+        </button>
+      </div>
+    </div>
+
+    <!-- Move target modal -->
+    <div id="move-target-modal" class="move-target-modal hidden" aria-hidden="true">
+      <div class="move-target-modal-card">
+        <p class="move-target-modal-eyebrow">批量移动</p>
+        <h2 id="move-target-modal-title">选择目标分类</h2>
+        <p id="move-target-modal-description">选择分类将表情包移动过去。</p>
+        <div id="move-target-list" class="move-target-list"></div>
+        <div class="move-target-modal-actions">
+          <button id="move-target-cancel-btn" class="secondary">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category edit modal -->
+    <div id="category-edit-modal" class="category-edit-modal hidden" aria-hidden="true">
+      <div class="category-edit-modal-card">
+        <p class="category-edit-modal-eyebrow">编辑类别</p>
+        <h2 id="category-edit-modal-title">修改类别</h2>
+        <p id="category-edit-modal-description">调整名称和描述。</p>
+        <div class="category-edit-form-panel">
+          <label for="category-edit-name-input">名称</label>
+          <input id="category-edit-name-input" type="text" placeholder="类别名称" />
+          <label for="category-edit-desc-input">描述</label>
+          <input id="category-edit-desc-input" type="text" placeholder="类别描述" />
+        </div>
+        <div class="category-edit-modal-actions">
+          <button id="category-edit-cancel-btn" class="secondary">取消</button>
+          <button id="category-edit-save-btn">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm modal -->
+    <div id="confirm-modal" class="confirm-modal hidden" aria-hidden="true">
+      <div class="confirm-modal-card">
+        <p class="confirm-modal-eyebrow">确认操作</p>
+        <h2 id="confirm-modal-title">请确认</h2>
+        <p id="confirm-modal-description"></p>
+        <div class="confirm-modal-actions">
+          <button id="confirm-modal-cancel-btn" class="secondary">取消</button>
+          <button id="confirm-modal-confirm-btn">确认</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger confirm modal -->
+    <div id="danger-confirm-modal" class="danger-modal hidden" aria-hidden="true">
+      <div class="danger-modal-card">
+        <p class="danger-modal-eyebrow">危险操作</p>
+        <h2 id="danger-modal-title">请确认</h2>
+        <p id="danger-modal-description"></p>
+        <label class="danger-modal-check" for="danger-modal-ack">
+          <input type="checkbox" id="danger-modal-ack" />
+          <span>我已理解该操作不可恢复</span>
+        </label>
+        <p id="danger-modal-stage-text" class="danger-modal-stage-text">
+          请先勾选已理解，然后即可执行。
+        </p>
+        <div class="danger-modal-actions">
+          <button id="danger-modal-cancel-btn" class="secondary">取消</button>
+          <button id="danger-modal-confirm-btn" class="danger" disabled>
+            继续确认
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox hidden" aria-hidden="true">
+      <button id="lightbox-close-btn" class="lightbox-close" aria-label="关闭">
+        <i class="fas fa-xmark"></i>
+      </button>
+      <button id="lightbox-prev-btn" class="lightbox-nav lightbox-prev" aria-label="上一张">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <img id="lightbox-img" src="" alt="" />
+      <button id="lightbox-next-btn" class="lightbox-nav lightbox-next" aria-label="下一张">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+      <div id="lightbox-info" class="lightbox-info"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>
